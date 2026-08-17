@@ -31,13 +31,12 @@ const Navbar = ({ onConfessClick, onAboutClick }) => {
               alt="Paap Dholo"
               className="h-9 w-auto object-contain"
             />
-            <div className="hidden sm:flex flex-col justify-center leading-none gap-0.5">
+            <div className="flex flex-col justify-center leading-none gap-0.5">
               <span
-                className="text-black uppercase"
+                className="text-black uppercase text-xs sm:text-[13px]"
                 style={{
                   fontFamily: 'Plus Jakarta Sans, sans-serif',
                   fontWeight: 900,
-                  fontSize: '13px',
                   letterSpacing: '0.12em',
                   lineHeight: 1,
                 }}
@@ -45,11 +44,10 @@ const Navbar = ({ onConfessClick, onAboutClick }) => {
                 PAAP DHOLO
               </span>
               <span
-                className="text-[#F43F5E] border border-[#F43F5E] px-1 py-px self-start"
+                className="text-[#F43F5E] border border-[#F43F5E] px-1 py-px self-start text-[6.5px] sm:text-[7.5px]"
                 style={{
                   fontFamily: 'Plus Jakarta Sans, sans-serif',
                   fontWeight: 700,
-                  fontSize: '7.5px',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                   lineHeight: 1.3,
