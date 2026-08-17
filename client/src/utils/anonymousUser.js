@@ -1,6 +1,7 @@
 import { AVATARS, getRandomAvatar } from '../data/avatars.js';
 
 const USER_KEY = 'paap_user';
+const IP_KEY = 'paap_user_ip';
 
 // Possible display names paired with avatar IDs derived from AVATARS
 const IDENTITIES = AVATARS.map((a) => ({
@@ -9,10 +10,33 @@ const IDENTITIES = AVATARS.map((a) => ({
 }));
 
 const generateUserId = () =>
-  'user_' + Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
+  'uid_' + Math.random().toString(36).slice(2, 9) + '_' + Date.now().toString(36);
 
 const pickRandomIdentity = () =>
   IDENTITIES[Math.floor(Math.random() * IDENTITIES.length)];
+
+/**
+ * Fetch and cache user's public IP address.
+ */
+export const getUserIp = async () => {
+  try {
+    const cached = localStorage.getItem(IP_KEY);
+    if (cached) return cached;
+
+    const res = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.ip) {
+        localStorage.setItem(IP_KEY, data.ip);
+        return data.ip;
+      }
+    }
+  } catch {
+    // Fallback if offline or network blocked
+  }
+  const fallbackIp = localStorage.getItem(IP_KEY) || '127.0.0.1';
+  return fallbackIp;
+};
 
 /**
  * Get or create the current user's anonymous identity.
@@ -22,11 +46,19 @@ export const getOrCreateUser = () => {
   try {
     const stored = localStorage.getItem(USER_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // Ensure uid exists
+      if (!parsed.uid) {
+        parsed.uid = parsed.id || generateUserId();
+        localStorage.setItem(USER_KEY, JSON.stringify(parsed));
+      }
+      return parsed;
     }
     const identity = pickRandomIdentity();
+    const uid = generateUserId();
     const user = {
-      id: generateUserId(),
+      id: uid,
+      uid,
       avatarId: identity.avatarId,
       displayName: identity.displayName,
       createdAt: Date.now(),
@@ -35,7 +67,8 @@ export const getOrCreateUser = () => {
     return user;
   } catch {
     return {
-      id: 'anon',
+      id: 'uid_anon',
+      uid: 'uid_anon',
       avatarId: AVATARS[0].id,
       displayName: AVATARS[0].name,
     };
@@ -58,8 +91,10 @@ export const rerollIdentity = () => {
       attempts++;
     }
 
+    const uid = currentUser?.uid || currentUser?.id || generateUserId();
     const user = {
-      id: currentUser?.id || generateUserId(),
+      id: uid,
+      uid,
       avatarId: identity.avatarId,
       displayName: identity.displayName,
       createdAt: currentUser?.createdAt || Date.now(),

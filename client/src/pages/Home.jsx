@@ -14,7 +14,9 @@ import {
   getKarmaCourtTop,
   getPaapDhulaiLeaderboard,
   getStats,
+  isUserBanned,
 } from '../services/confessionService.js';
+import { getUserIp } from '../utils/anonymousUser.js';
 
 const TERMS_SEEN_KEY = 'paap_terms_seen';
 
@@ -26,13 +28,26 @@ const Home = ({ user }) => {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [selectedKarmaId, setSelectedKarmaId] = useState(null);
+  const [userIp, setUserIp] = useState('127.0.0.1');
+  const [isBanned, setIsBanned] = useState(false);
+
+  // Fetch client IP on mount
+  React.useEffect(() => {
+    getUserIp().then((ip) => {
+      if (ip) {
+        setUserIp(ip);
+        setIsBanned(isUserBanned({ uid: user.uid || user.id, ip }));
+      }
+    });
+  }, [user]);
 
   const refreshData = useCallback(() => {
     setFeedRefreshKey((k) => k + 1);
     setStats(getStats());
     setKarmaTop(getKarmaCourtTop());
     setDhulaiBoard(getPaapDhulaiLeaderboard());
-  }, []);
+    setIsBanned(isUserBanned({ uid: user.uid || user.id, ip: userIp }));
+  }, [user, userIp]);
 
   // Auto-show Terms & Rules dialog for first-time visitors once they scroll down (not immediately on landing)
   React.useEffect(() => {
@@ -69,17 +84,21 @@ const Home = ({ user }) => {
       setStats(getStats());
       setKarmaTop(getKarmaCourtTop());
       setDhulaiBoard(getPaapDhulaiLeaderboard());
+      setIsBanned(isUserBanned({ uid: user.uid || user.id, ip: userIp }));
     };
     window.addEventListener('paap_data_updated', handleUpdate);
     return () => window.removeEventListener('paap_data_updated', handleUpdate);
-  }, []);
+  }, [user, userIp]);
 
-  const handleConfessSubmit = useCallback(({ text, severity }) => {
+  const handleConfessSubmit = useCallback(async ({ text, severity }) => {
+    const ip = await getUserIp();
     createConfession({
       text,
       severity,
       avatarId: user.avatarId,
       displayName: user.displayName,
+      authorUid: user.uid || user.id,
+      authorIp: ip,
     });
     refreshData();
   }, [user, refreshData]);
@@ -94,6 +113,18 @@ const Home = ({ user }) => {
         onConfessClick={scrollToConfess}
         onAboutClick={() => setAboutOpen(true)}
       />
+
+      {isBanned && (
+        <div className="bg-[#111] text-[#F43F5E] border-b-4 border-[#F43F5E] px-4 py-3 text-center shadow-lg sticky top-0 z-50 animate-pop">
+          <div className="max-w-4xl mx-auto flex items-center justify-center gap-2 font-ui text-sm font-800 tracking-wider uppercase">
+            <span>🚫</span>
+            <span>AAPKA ACCOUNT AUR IP BAN HO CHUKA HAI</span>
+          </div>
+          <p className="text-xs text-gray-300 font-ui mt-0.5">
+            Repeated guidelines / legal violations ke karan aapka posting aur commenting access suspend kar diya gaya hai.
+          </p>
+        </div>
+      )}
 
       <Hero user={user} onConfessSubmit={handleConfessSubmit} />
 

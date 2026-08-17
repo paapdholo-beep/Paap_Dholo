@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Home from './pages/Home.jsx';
 import { seedIfEmpty } from './services/confessionService.js';
+import { initFirestoreSync } from './services/firebaseService.js';
 import { getOrCreateUser } from './utils/anonymousUser.js';
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
   useEffect(() => {
     // Seed mock data if localStorage is empty
     seedIfEmpty();
+    // Initialize Cloud Firestore real-time listener
+    initFirestoreSync();
     // Get or create anonymous user
     const currentUser = getOrCreateUser();
     setUser(currentUser);

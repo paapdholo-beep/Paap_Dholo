@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Avatar from './Avatar.jsx';
 import { timeAgo, formatCount, getSeverityInfo } from '../utils/formatters.js';
-import { addReaction, getUserReactions, addReply } from '../services/confessionService.js';
+import { addReaction, getUserReactions, addReply, reportConfession } from '../services/confessionService.js';
+import { getUserIp } from '../utils/anonymousUser.js';
 
 const REACTIONS = [
   { key: 'forgive',     emoji: '🙏', label: 'Maaf Kiya' },
@@ -17,24 +18,44 @@ const CARD_VARIANTS = [
   { bg: '#F5EEDF', border: '#111' },
 ];
 
+const REPORT_REASONS = [
+  { key: 'doxxing', label: '📱 Phone number / Personal info / Doxxing' },
+  { key: 'hate', label: '⚔️ Communal hate speech / Harassment' },
+  { key: 'illegal', label: '⚠️ Threat / Extortion / Illegal activity' },
+  { key: 'other', label: '🛑 Severe Community guideline violation' },
+];
+
 const ReplySection = ({ confession, user, onReplyAdded }) => {
   const [replyText, setReplyText] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmitReply = () => {
+  const handleSubmitReply = async () => {
     if (!replyText.trim()) return;
-    const reply = addReply({
-      confessionId: confession.id,
-      text: replyText,
-      avatarId: user.avatarId,
-      displayName: user.displayName,
-    });
-    setReplyText('');
-    onReplyAdded(reply);
+    try {
+      const ip = await getUserIp();
+      const reply = addReply({
+        confessionId: confession.id,
+        text: replyText,
+        avatarId: user.avatarId,
+        displayName: user.displayName,
+        authorUid: user.uid || user.id,
+        authorIp: ip,
+      });
+      setReplyText('');
+      setErrorMsg('');
+      onReplyAdded(reply);
+    } catch (err) {
+      setErrorMsg(err.message || 'Comment submit nahi ho paya.');
+    }
   };
 
   return (
     <div className="mt-3 pt-3 border-t border-dashed border-gray-300 animate-slide-up">
+      {errorMsg && (
+        <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 text-xs font-ui font-700">
+          {errorMsg}
+        </div>
+      )}
       {confession.replies?.length > 0 && (
         <div className="space-y-2 mb-3">
           {confession.replies.map((reply) => (
@@ -81,9 +102,11 @@ const ReplySection = ({ confession, user, onReplyAdded }) => {
 const ConfessionCard = ({ confession: initialConfession, user, index, isHighlighted, onClearHighlight }) => {
   const [confession, setConfession] = useState(initialConfession);
   const [userReactions, setUserReactions] = useState(
-    () => getUserReactions({ confessionId: initialConfession.id, userId: user.id })
+    () => getUserReactions({ confessionId: initialConfession.id, userId: user.id || user.uid })
   );
   const [showReplies, setShowReplies] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportedState, setReportedState] = useState(false);
   const [animatingReaction, setAnimatingReaction] = useState(null);
 
   const severityInfo = getSeverityInfo(confession.severity);
@@ -97,7 +120,7 @@ const ConfessionCard = ({ confession: initialConfession, user, index, isHighligh
     const result = addReaction({
       confessionId: confession.id,
       reactionType: reactionKey,
-      userId: user.id,
+      userId: user.id || user.uid,
     });
     setConfession((prev) => ({ ...prev, reactions: result.reactions }));
     setUserReactions((prev) => ({ ...prev, [reactionKey]: result.updated }));
@@ -110,13 +133,24 @@ const ConfessionCard = ({ confession: initialConfession, user, index, isHighligh
     }));
   };
 
-  const totalReactions = Object.values(confession.reactions).reduce((s, v) => s + v, 0);
+  const handleReportSubmit = async (reason) => {
+    const ip = await getUserIp();
+    reportConfession({
+      confessionId: confession.id,
+      reason,
+      reporterUid: user.uid || user.id,
+      reporterIp: ip,
+    });
+    setReportedState(true);
+    setShowReportModal(false);
+  };
+
   const topReply = confession.replies?.[0];
 
   return (
     <div
       id={`confession-${confession.id}`}
-      className={`card-tilt border-2 ${isHighlighted ? 'border-[#F43F5E] ring-2 ring-[#F43F5E]/30' : 'border-black'} p-4 sm:p-5 animate-slide-up transition-all`}
+      className={`card-tilt border-2 ${isHighlighted ? 'border-[#F43F5E] ring-2 ring-[#F43F5E]/30' : 'border-black'} p-4 sm:p-5 animate-slide-up transition-all relative`}
       style={{
         backgroundColor: isHighlighted ? '#FFF9E0' : variant.bg,
         transform: tilt,
@@ -171,7 +205,7 @@ const ConfessionCard = ({ confession: initialConfession, user, index, isHighligh
         </div>
       </div>
 
-      {/* Confession Text + Top Judgement — side by side on larger screens */}
+      {/* Confession Text + Top Judgement */}
       <div className="flex flex-col sm:flex-row gap-3 mb-3 items-start">
         <div
           className="font-handwrite text-gray-900 flex-1"
@@ -199,7 +233,7 @@ const ConfessionCard = ({ confession: initialConfession, user, index, isHighligh
         )}
       </div>
 
-      {/* Reaction Bar */}
+      {/* Reaction Bar + Report Button */}
       <div className="flex items-center gap-1 flex-wrap mt-1">
         {REACTIONS.map(({ key, emoji, label }) => (
           <button
@@ -233,6 +267,22 @@ const ConfessionCard = ({ confession: initialConfession, user, index, isHighligh
           <span className="text-sm">💬</span>
           <span className="text-[10px]">{confession.replies?.length || 0}</span>
         </button>
+
+        {/* 🚩 Report Button */}
+        <button
+          onClick={() => setShowReportModal(true)}
+          disabled={reportedState}
+          title="Report illegal content or doxxing"
+          className={`reaction-btn flex items-center gap-1 px-2 py-1.5 border text-[11px] font-ui transition-all ${
+            reportedState
+              ? 'bg-red-100 border-red-300 text-red-600 cursor-default'
+              : 'bg-white border-gray-300 text-gray-500 hover:text-red-600 hover:border-red-400 cursor-pointer'
+          }`}
+          style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 600 }}
+        >
+          <span>🚩</span>
+          <span>{reportedState ? 'Reported' : 'Report'}</span>
+        </button>
       </div>
 
       {/* Expandable replies */}
@@ -242,6 +292,46 @@ const ConfessionCard = ({ confession: initialConfession, user, index, isHighligh
           user={user}
           onReplyAdded={handleReplyAdded}
         />
+      )}
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-[#FFFDF7] border-3 border-black shadow-[6px_6px_0_#111] max-w-sm w-full p-5 relative animate-pop">
+            <div className="flex items-center justify-between pb-3 border-b-2 border-black mb-3">
+              <div className="font-ui font-900 text-sm uppercase tracking-wider text-black flex items-center gap-1.5">
+                <span>🚩</span> Report Confession
+              </div>
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="text-gray-500 hover:text-black font-bold text-lg cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-xs text-gray-600 font-ui mb-3 leading-relaxed">
+              Why are you reporting this confession? Our admin moderation will review and take down violations:
+            </p>
+            <div className="space-y-2 mb-4">
+              {REPORT_REASONS.map((r) => (
+                <button
+                  key={r.key}
+                  onClick={() => handleReportSubmit(r.label)}
+                  className="w-full text-left p-2.5 bg-[#F5EEDF] border-2 border-black text-xs font-ui font-700 hover:bg-[#F43F5E] hover:text-white transition-colors cursor-pointer"
+                  style={{ fontFamily: 'Plus Jakarta Sans' }}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setShowReportModal(false)}
+              className="w-full py-2 bg-gray-200 text-black border-2 border-black font-ui text-xs font-700 uppercase tracking-widest hover:bg-gray-300 cursor-pointer"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
