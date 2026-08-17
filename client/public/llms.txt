@@ -1,0 +1,23 @@
+# Paap Dholo (पाप धोलो)
+
+> Internet ka Desi Anonymous Confession Box & Karma Court.
+
+## About
+Paap Dholo is India's anonymous confession, venting, and community judgment platform. Users can anonymously confess their secrets, guilty pleasures, college gossip, workplace blunders, and personal mistakes without creating an account or revealing their identity. The community reads, reacts (🙏 Maaf Kiya, 😂 Paap Bhari Comedy, 😡 Sharam Kar, 👀 Interesting, 💀 Bhai Kya Kar), leaves judgements, and participates in the live interactive Karma Court and Paap Dhulai (sin cleansing ritual).
+
+## Key Features
+- **100% Anonymous Confessions**: No registration, no login, no phone numbers, no tracking of personal identifiable information.
+- **Desi Neo-Brutalist Aesthetic**: Nostalgic Indian cultural art style with interactive torn paper scraps, Hindi/English typography, and spiritual satire.
+- **Karma Court & Ganga Dhulai**: Users can confess sins, select severity (Halka Paap, Bada Paap, Mahapaap), and receive community verdicts.
+- **Moderation & Safety Compliance**: In compliance with the Information Technology Act 2000 (Section 79), hate speech, doxxing, harassment, and illegal content are strictly banned and filtered by community flagging and real-time administrator moderation.
+
+## Core Terminology & Keywords
+- **Paap (पाप)**: Sin or mistake committed by an individual.
+- **Paap Dhulai**: The symbolic act of cleansing one's conscience by confessing anonymously.
+- **Karma Court (कर्म अदालत)**: The interactive public feed where visitors deliver judgements and reactions.
+- **Severity Levels**: Minor Paap (हल्का पाप), Medium Paap (मध्यम पाप), Bada Paap (बड़ा पाप), Mahapaap (महापाप).
+
+## Official Links
+- **Website**: https://paapdholo.com
+- **Sitemap**: https://paapdholo.com/sitemap.xml
+- **Language Support**: Hinglish, Hindi, English

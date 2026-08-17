@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://paapdholo.com/</loc>
     <lastmod>2026-08-17</lastmod>
-    <changefreq>daily</changefreq>
+    <changefreq>hourly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://paapdholo.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://paapdholo.com/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://paapdholo.com/" />
+    <image:image>
+      <image:loc>https://paapdholo.com/Paap_Dholo_logo_black.webp</image:loc>
+      <image:title>Paap Dholo — Internet ka Anonymous Confession Box</image:title>
+      <image:caption>Confess your sins anonymously, get judged by the community, and cleanse your karma.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://paapdholo.com/Pandit.webp</image:loc>
+      <image:title>Karma Pandit Mascot</image:title>
+      <image:caption>Paap Dholo Spiritual AI Mascot</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://paapdholo.com/Soap_bar.webp</image:loc>
+      <image:title>Paap Dhulai Soap Bar</image:title>
+      <image:caption>Instant Karma Cleansing Simulation</image:caption>
+    </image:image>
   </url>
 </urlset>
