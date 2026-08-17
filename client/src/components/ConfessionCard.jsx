@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import Avatar from './Avatar.jsx';
 import { timeAgo, formatCount, getSeverityInfo } from '../utils/formatters.js';
-import { addReaction, getUserReactions, addReply, reportConfession } from '../services/confessionService.js';
+import {
+  addReaction,
+  getUserReactions,
+  addReply,
+  reportConfession,
+  reportComment,
+  hasUserReportedConfession,
+  hasUserReportedComment,
+} from '../services/confessionService.js';
 import { getUserIp } from '../utils/anonymousUser.js';
 
 const REACTIONS = [
@@ -28,6 +36,34 @@ const REPORT_REASONS = [
 const ReplySection = ({ confession, user, onReplyAdded }) => {
   const [replyText, setReplyText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [reportedReplies, setReportedReplies] = useState({});
+
+  const isReplyReported = (replyId) => {
+    if (reportedReplies[replyId]) return true;
+    return hasUserReportedComment({ replyId, userId: user.uid || user.id });
+  };
+
+  const handleReportCommentSubmit = async (reply) => {
+    if (isReplyReported(reply.id)) {
+      alert('Aap pehle hi is comment ko report kar chuke hain.');
+      return;
+    }
+    const reason = prompt('Reason for reporting comment (optional):', 'Inappropriate or abusive content') || 'Inappropriate or abusive content';
+    const ip = await getUserIp();
+    const res = reportComment({
+      confessionId: confession.id,
+      replyId: reply.id,
+      reason,
+      reporterUid: user.uid || user.id,
+      reporterIp: ip,
+    });
+    if (res?.alreadyReported) {
+      alert('Aap pehle hi is comment ko report kar chuke hain.');
+    } else {
+      setReportedReplies((prev) => ({ ...prev, [reply.id]: true }));
+      alert('🚩 Comment reported to moderation.');
+    }
+  };
 
   const handleSubmitReply = async () => {
     if (!replyText.trim()) return;
@@ -58,18 +94,36 @@ const ReplySection = ({ confession, user, onReplyAdded }) => {
       )}
       {confession.replies?.length > 0 && (
         <div className="space-y-2 mb-3">
-          {confession.replies.map((reply) => (
-            <div key={reply.id} className="flex gap-2 items-start">
-              <Avatar avatarId={reply.avatarId} size="xs" />
-              <div className="flex-1 bg-[#F5EEDF] px-3 py-2 border border-gray-200">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="font-ui text-xs font-600 text-gray-700" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 600 }}>{reply.displayName}</span>
-                  <span className="font-ui text-[10px] text-gray-400" style={{ fontFamily: 'Plus Jakarta Sans' }}>{timeAgo(reply.createdAt)}</span>
+          {confession.replies.map((reply) => {
+            const alreadyReported = isReplyReported(reply.id);
+            return (
+              <div key={reply.id} className="flex gap-2 items-start group">
+                <Avatar avatarId={reply.avatarId} size="xs" />
+                <div className="flex-1 bg-[#F5EEDF] px-3 py-2 border border-gray-200 relative">
+                  <div className="flex items-center justify-between gap-2 mb-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-ui text-xs font-600 text-gray-700" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 600 }}>{reply.displayName}</span>
+                      <span className="font-ui text-[10px] text-gray-400" style={{ fontFamily: 'Plus Jakarta Sans' }}>{timeAgo(reply.createdAt)}</span>
+                    </div>
+                    {/* Report comment button */}
+                    <button
+                      onClick={() => handleReportCommentSubmit(reply)}
+                      disabled={alreadyReported}
+                      title={alreadyReported ? 'Comment already reported' : 'Report comment'}
+                      className={`text-[10px] font-ui transition-colors cursor-pointer px-1 py-0.5 ${
+                        alreadyReported
+                          ? 'text-red-500 font-bold opacity-80 cursor-default'
+                          : 'text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100'
+                      }`}
+                    >
+                      {alreadyReported ? '🚩 Reported' : '🚩 Report'}
+                    </button>
+                  </div>
+                  <div className="font-handwrite text-gray-900" style={{ fontFamily: "'Kalam', cursive, sans-serif", fontSize: 'clamp(0.92rem, 1.02vw, 1.05rem)', lineHeight: 1.4 }}>{reply.text}</div>
                 </div>
-                <div className="font-handwrite text-gray-900" style={{ fontFamily: "'Kalam', cursive, sans-serif", fontSize: 'clamp(0.92rem, 1.02vw, 1.05rem)', lineHeight: 1.4 }}>{reply.text}</div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -106,7 +160,12 @@ const ConfessionCard = ({ confession: initialConfession, user, index, isHighligh
   );
   const [showReplies, setShowReplies] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [reportedState, setReportedState] = useState(false);
+  const [reportedState, setReportedState] = useState(() => {
+    return hasUserReportedConfession({
+      confessionId: initialConfession.id,
+      userId: user?.id || user?.uid,
+    });
+  });
   const [animatingReaction, setAnimatingReaction] = useState(null);
 
   const severityInfo = getSeverityInfo(confession.severity);
@@ -135,12 +194,15 @@ const ConfessionCard = ({ confession: initialConfession, user, index, isHighligh
 
   const handleReportSubmit = async (reason) => {
     const ip = await getUserIp();
-    reportConfession({
+    const res = reportConfession({
       confessionId: confession.id,
       reason,
       reporterUid: user.uid || user.id,
       reporterIp: ip,
     });
+    if (res?.alreadyReported) {
+      alert('Aap pehle hi is confession ko report kar chuke hain.');
+    }
     setReportedState(true);
     setShowReportModal(false);
   };

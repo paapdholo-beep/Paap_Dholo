@@ -222,29 +222,125 @@ export const createConfession = ({ text, severity, avatarId, displayName, author
   return confession;
 };
 
+const REPORTED_ITEMS_KEY = 'paap_reported_items';
+
+/**
+ * Check if a user/browser has already reported a confession.
+ */
+export const hasUserReportedConfession = ({ confessionId, userId }) => {
+  if (!confessionId) return false;
+  const uid = userId || 'anon';
+  if (localStorage.getItem(`${REPORTED_ITEMS_KEY}_confession_${confessionId}_${uid}`)) {
+    return true;
+  }
+  const data = load(CONFESSIONS_KEY, []);
+  const confession = data.find((c) => c.id === confessionId);
+  if (confession?.reportReasons?.some((r) => r.reporterUid === uid && uid !== 'anon_uid')) {
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Check if a user/browser has already reported a specific comment/reply.
+ */
+export const hasUserReportedComment = ({ replyId, userId }) => {
+  if (!replyId) return false;
+  const uid = userId || 'anon';
+  if (localStorage.getItem(`${REPORTED_ITEMS_KEY}_comment_${replyId}_${uid}`)) {
+    return true;
+  }
+  const data = load(CONFESSIONS_KEY, []);
+  for (const c of data) {
+    const reply = (c.replies || []).find((r) => r.id === replyId);
+    if (reply?.reportReasons?.some((r) => r.reporterUid === uid && uid !== 'anon_uid')) {
+      return true;
+    }
+  }
+  return false;
+};
+
 /**
  * Report a confession for legal/community violation.
+ * Prevents multiple reports from the same user/browser.
  */
-export const reportConfession = ({ confessionId, reason, reporterUid, reporterIp }) => {
+export const reportConfession = ({ confessionId, reason, reporterUid, reporterIp, userUid, customDetails }) => {
+  const uid = reporterUid || userUid || 'anon_uid';
+
+  if (hasUserReportedConfession({ confessionId, userId: uid })) {
+    return { success: false, alreadyReported: true, error: 'Aap is confession ko pehle hi report kar chuke hain.' };
+  }
+
   const data = load(CONFESSIONS_KEY, []);
   let targetCount = 0;
   let targetReasons = [];
+
+  const finalReason = customDetails ? `${reason} (Details: ${customDetails})` : reason;
 
   const updated = data.map((c) => {
     if (c.id !== confessionId) return c;
     const existingReasons = c.reportReasons || [];
     targetCount = (c.reportsCount || 0) + 1;
-    targetReasons = [...existingReasons, { reason, reporterUid, reporterIp, reportedAt: Date.now() }];
+    targetReasons = [...existingReasons, { reason: finalReason, reporterUid: uid, reporterIp, reportedAt: Date.now() }];
     return {
       ...c,
       reportsCount: targetCount,
       reportReasons: targetReasons,
     };
   });
+
   save(CONFESSIONS_KEY, updated);
+  try {
+    localStorage.setItem(`${REPORTED_ITEMS_KEY}_confession_${confessionId}_${uid}`, 'true');
+  } catch (e) {
+    console.warn('LocalStorage save report state failed:', e);
+  }
   reportConfessionInFirestore(confessionId, targetCount, targetReasons);
   notifyDataChanged();
-  return true;
+  return { success: true, count: targetCount };
+};
+
+/**
+ * Report a comment / reply on a confession.
+ * Prevents multiple reports on the same comment from the same user.
+ */
+export const reportComment = ({ confessionId, replyId, reason = 'Community Guideline Violation', reporterUid, reporterIp }) => {
+  const uid = reporterUid || 'anon_uid';
+
+  if (hasUserReportedComment({ replyId, userId: uid })) {
+    return { success: false, alreadyReported: true, error: 'Aap is comment ko pehle hi report kar chuke hain.' };
+  }
+
+  const data = load(CONFESSIONS_KEY, []);
+  let updatedReplies = [];
+
+  const updated = data.map((c) => {
+    if (c.id !== confessionId) return c;
+    updatedReplies = (c.replies || []).map((r) => {
+      if (r.id !== replyId) return r;
+      const existingReasons = r.reportReasons || [];
+      const newReasons = [...existingReasons, { reason, reporterUid: uid, reporterIp, reportedAt: Date.now() }];
+      return {
+        ...r,
+        reportsCount: (r.reportsCount || 0) + 1,
+        reportReasons: newReasons,
+      };
+    });
+    return {
+      ...c,
+      replies: updatedReplies,
+    };
+  });
+
+  save(CONFESSIONS_KEY, updated);
+  try {
+    localStorage.setItem(`${REPORTED_ITEMS_KEY}_comment_${replyId}_${uid}`, 'true');
+  } catch (e) {
+    console.warn('LocalStorage save comment report state failed:', e);
+  }
+  addReplyInFirestore(confessionId, updatedReplies);
+  notifyDataChanged();
+  return { success: true };
 };
 
 /**
