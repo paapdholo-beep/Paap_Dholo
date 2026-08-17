@@ -5,20 +5,29 @@ const Avatar = ({ avatarId, size = 'md', className = '' }) => {
   const avatar = getAvatarById(avatarId);
 
   const sizes = {
-    xs:  'w-7 h-7 text-sm',
-    sm:  'w-9 h-9 text-base',
-    md:  'w-12 h-12 text-xl',
-    lg:  'w-16 h-16 text-3xl',
-    xl:  'w-20 h-20 text-4xl',
+    xs:  'w-8 h-8 min-w-[2rem] text-xs',
+    sm:  'w-11 h-11 min-w-[2.75rem] text-sm',
+    md:  'w-14 h-14 min-w-[3.5rem] text-base',
+    lg:  'w-18 h-18 min-w-[4.5rem] text-xl',
+    xl:  'w-24 h-24 min-w-[6rem] text-2xl',
   };
 
   return (
     <div
-      className={`${sizes[size]} rounded-full flex items-center justify-center font-bold border-2 border-black flex-shrink-0 ${className}`}
-      style={{ backgroundColor: avatar.bg, color: avatar.color }}
+      className={`${sizes[size] || sizes.md} rounded-full overflow-hidden flex items-center justify-center font-bold border-2 border-black flex-shrink-0 shadow-[2px_2px_0_#000] ${className}`}
+      style={{ backgroundColor: avatar.bg || '#FFFDF7' }}
       title={avatar.name}
     >
-      {avatar.emoji}
+      {avatar.image ? (
+        <img
+          src={avatar.image}
+          alt={avatar.name}
+          className="w-full h-full object-cover select-none pointer-events-none"
+          loading="lazy"
+        />
+      ) : (
+        <span style={{ color: avatar.color }}>{avatar.emoji}</span>
+      )}
     </div>
   );
 };

@@ -90,17 +90,33 @@ const ConfessionFeed = ({ user, refreshKey }) => {
         )}
       </div>
 
-      {/* Load More */}
-      {hasMore && (
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            className="font-ui font-700 text-sm tracking-widest uppercase border-2 border-black px-6 py-3 hover:bg-black hover:text-white transition-colors cursor-pointer flex items-center gap-2 mx-auto"
-            style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700 }}
-          >
-            LOAD MORE PAAP
-            <span className="animate-pulse">○</span>
-          </button>
+      {/* Pagination Actions: Load More / Roll Back */}
+      {(hasMore || page > 1) && (
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          {hasMore && (
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              className="font-ui font-700 text-xs sm:text-sm tracking-widest uppercase border-2 border-black bg-white px-5 sm:px-6 py-3 hover:bg-black hover:text-[#F5C400] shadow-[2px_2px_0_#111] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center gap-2"
+              style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700 }}
+            >
+              LOAD MORE PAAP
+              <span className="text-xs">↓</span>
+            </button>
+          )}
+
+          {page > 1 && (
+            <button
+              onClick={() => {
+                setPage(1);
+                document.getElementById('paap-register')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="font-ui font-700 text-xs sm:text-sm tracking-widest uppercase border-2 border-black bg-[#FFF9E0] text-black px-5 sm:px-6 py-3 hover:bg-black hover:text-white shadow-[2px_2px_0_#111] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center gap-2"
+              style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700 }}
+            >
+              ROLL BACK / SHOW LESS
+              <span className="text-xs">↑</span>
+            </button>
+          )}
         </div>
       )}
     </div>

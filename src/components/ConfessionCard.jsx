@@ -45,7 +45,7 @@ const ReplySection = ({ confession, user, onReplyAdded }) => {
                   <span className="font-ui text-xs font-600 text-gray-700" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 600 }}>{reply.displayName}</span>
                   <span className="font-ui text-[10px] text-gray-400" style={{ fontFamily: 'Plus Jakarta Sans' }}>{timeAgo(reply.createdAt)}</span>
                 </div>
-                <div className="font-handwrite text-sm text-gray-800" style={{ fontFamily: 'Caveat', fontSize: '0.95rem' }}>{reply.text}</div>
+                <div className="font-handwrite text-gray-800" style={{ fontFamily: 'Caveat', fontSize: 'clamp(1.02rem, 1.1vw, 1.2rem)', lineHeight: 1.35 }}>{reply.text}</div>
               </div>
             </div>
           ))}
@@ -126,7 +126,7 @@ const ConfessionCard = ({ confession: initialConfession, user, index }) => {
       {/* Card Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2.5">
-          <Avatar avatarId={confession.avatarId} size="sm" />
+          <Avatar avatarId={confession.avatarId} size="md" />
           <div>
             <div className="font-ui font-700 text-sm text-black" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700 }}>
               {confession.displayName}
@@ -155,25 +155,25 @@ const ConfessionCard = ({ confession: initialConfession, user, index }) => {
       {/* Confession Text + Top Judgement — side by side on larger screens */}
       <div className="flex flex-col sm:flex-row gap-3 mb-3 items-start">
         <div
-          className="font-handwrite text-base sm:text-lg leading-snug text-gray-900 flex-1"
-          style={{ fontFamily: 'Caveat', fontSize: '1.1rem', lineHeight: 1.4 }}
+          className="font-handwrite text-gray-900 flex-1"
+          style={{ fontFamily: 'Caveat', fontSize: 'clamp(1.15rem, 1.4vw, 1.45rem)', lineHeight: 1.35 }}
         >
           {confession.text}
         </div>
 
         {topReply && (
-          <div className="bg-[#FFF9E0] border border-[#F5C400] px-3 py-2 sm:w-56 flex-shrink-0 w-full">
-            <div className="font-ui text-[9px] tracking-widest uppercase text-[#F43F5E] mb-1"
+          <div className="bg-[#FFF9E0] border border-[#F5C400] px-3 py-2 sm:w-60 flex-shrink-0 w-full">
+            <div className="font-ui text-[9px] sm:text-[10px] tracking-widest uppercase text-[#F43F5E] mb-1"
               style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700 }}>
               TOP JUDGEMENT
             </div>
-            <div className="font-ui text-xs font-700 text-black mb-0.5" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700 }}>
+            <div className="font-ui text-xs sm:text-sm font-700 text-black mb-0.5" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700 }}>
               {topReply.displayName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
             </div>
-            <div className="font-handwrite text-sm text-gray-700 italic" style={{ fontFamily: 'Caveat', fontSize: '0.95rem' }}>
+            <div className="font-handwrite text-gray-800 italic" style={{ fontFamily: 'Caveat', fontSize: 'clamp(1.02rem, 1.15vw, 1.22rem)', lineHeight: 1.35 }}>
               "{topReply.text}"
             </div>
-            <div className="font-ui text-[10px] text-gray-400 mt-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+            <div className="font-ui text-[10px] sm:text-xs text-gray-500 mt-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>
               — {topReply.displayName}
             </div>
           </div>

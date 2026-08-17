@@ -3,7 +3,7 @@ import { buildTornEdgePath, PAPER_GRAIN_URI, PAPER_SHADOW } from '../utils/TornP
 
 // Fixed seed (23) so this card's tear is stable but different in shape
 // from the confession slip / feed cards sitting next to it.
-const TORN_PATH = buildTornEdgePath(23, { topSteps: 36, sideSteps: 30 });
+const TORN_PATH = buildTornEdgePath(23, { topSteps: 31, sideSteps: 25 });
 
 const BabaQuoteBanner = ({ onConfessClick }) => {
   return (
@@ -24,7 +24,6 @@ const BabaQuoteBanner = ({ onConfessClick }) => {
         }}
       >
         <div
-          className="relative overflow-hidden"
           style={{
             clipPath: 'url(#baba-torn-paper-clip)',
             backgroundColor: '#F5C400',
@@ -34,45 +33,107 @@ const BabaQuoteBanner = ({ onConfessClick }) => {
             `,
             backgroundRepeat: 'no-repeat, repeat',
             backgroundSize: '100% 100%, 180px 180px',
+            minHeight: '230px',
+            padding: '20px 18px 0px 18px',
+            position: 'relative',
           }}
         >
-          {/* Decorative trident */}
-          <div className="absolute -right-3 top-0 opacity-20 h-full flex items-center">
-            <img src="/Trident_2.webp" alt="" className="h-24 object-contain" />
+          {/* Top: Quote Mark & Text */}
+          <div className="relative z-10 flex items-start gap-2.5">
+            {/* Bold 66 quote mark */}
+            <div
+              style={{
+                fontSize: '2.8rem',
+                fontFamily: 'Rozha One, Georgia, serif',
+                fontWeight: 900,
+                color: '#111',
+                lineHeight: 0.75,
+                marginTop: '4px',
+              }}
+            >
+              “
+            </div>
+
+            {/* Typography */}
+            <div>
+              <div
+                style={{
+                  fontFamily: 'Plus Jakarta Sans, sans-serif',
+                  fontWeight: 900,
+                  fontSize: '1.25rem',
+                  letterSpacing: '0.02em',
+                  color: '#111',
+                  lineHeight: 1.15,
+                  textTransform: 'uppercase',
+                }}
+              >
+                KARO PAAP,<br />PAAO SHAANTI.
+              </div>
+
+              {/* Pink accent text with pink underline */}
+              <div className="relative inline-block mt-0.5">
+                <span
+                  style={{
+                    fontFamily: 'Plus Jakarta Sans, sans-serif',
+                    fontWeight: 900,
+                    fontSize: '1.2rem',
+                    letterSpacing: '0.04em',
+                    color: '#F43F5E',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  (YA JUDGEMENT)
+                </span>
+                <div
+                  style={{
+                    height: '2.5px',
+                    backgroundColor: '#F43F5E',
+                    width: '100%',
+                    marginTop: '-1px',
+                    borderRadius: '2px',
+                    transform: 'rotate(-0.5deg)',
+                  }}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-end gap-3 p-4">
-            {/* Pandit illustration */}
-            <div className="flex-shrink-0">
+          {/* Bottom Row: Pandit & Trident Illustrations */}
+          <div className="relative flex items-end justify-between mt-2" style={{ height: '140px' }}>
+            {/* Pandit Baba illustration */}
+            <div className="flex-shrink-0" style={{ marginBottom: '-6px', marginLeft: '-4px' }}>
               <img
                 src="/Pandit.webp"
                 alt="Paap Dholo Pandit"
-                className="h-20 w-auto object-contain"
+                style={{
+                  height: '138px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                }}
               />
             </div>
 
-            {/* Quote */}
-            <div className="flex-1 min-w-0">
-              <div className="text-2xl text-black mb-1 font-bold opacity-60">"</div>
-              <div className="font-ui font-900 text-base text-black leading-tight uppercase" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 900 }}>
-                KARO PAAP,<br />PAAO SHAANTI.
-              </div>
-              <div className="font-hindi text-sm text-[#F43F5E]" style={{ fontFamily: 'Rozha One' }}>
-                (YA JUDGEMENT)
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t-2 border-black px-4 py-2 flex items-center justify-between">
-            <span className="font-ui text-xs text-black font-600 tracking-widest uppercase" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 600 }}>
-              CONFESS NOW
-            </span>
-            <button
-              onClick={onConfessClick}
-              className="flex items-center justify-center w-10 h-10 bg-[#F43F5E] border-2 border-black cursor-pointer hover:bg-black transition-colors"
+            {/* High-visibility Trident illustration */}
+            <div
+              className="flex-shrink-0"
+              style={{
+                marginBottom: '-4px',
+                marginRight: '2px',
+                transform: 'rotate(8deg)',
+              }}
             >
-              <img src="/Soap_bar.webp" alt="soap" className="w-6 h-6 object-contain" />
-            </button>
+              <img
+                src="/Trident_1.webp"
+                alt="Trident"
+                style={{
+                  height: '136px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  opacity: 0.95,
+                  filter: 'drop-shadow(1px 2px 2px rgba(0,0,0,0.15))',
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

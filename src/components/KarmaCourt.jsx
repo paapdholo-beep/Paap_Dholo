@@ -34,8 +34,8 @@ const KarmaCourt = ({ topConfessions }) => {
       </div>
 
       {/* Podium */}
-      <div className="px-3 pt-6 pb-3">
-        <div className="flex items-end justify-center gap-2">
+      <div className="px-3.5 sm:px-4 pt-7 pb-4">
+        <div className="flex items-end justify-center gap-2.5 sm:gap-3">
           {podium.map(({ c, i }) => (
             <div key={c.id} className="flex-1 flex flex-col items-center min-w-0">
               {/* Avatar overlapping the top of the bar */}
@@ -48,15 +48,15 @@ const KarmaCourt = ({ topConfessions }) => {
 
               {/* Podium bar */}
               <div
-                className={`w-full ${BAR_COLORS[i]} border-2 border-black flex flex-col items-center justify-between pt-5 pb-2 px-1 relative`}
+                className={`w-full ${BAR_COLORS[i]} border-2 border-black flex flex-col items-center justify-between pt-5 pb-2 px-1.5 relative`}
                 style={{
-                  minHeight: RANK_LABELS[i] === '1' ? '170px' : RANK_LABELS[i] === '2' ? '150px' : '140px',
+                  minHeight: RANK_LABELS[i] === '1' ? '185px' : RANK_LABELS[i] === '2' ? '165px' : '155px',
                 }}
               >
                 {/* Tag & Rank */}
                 <div className="flex flex-col items-center w-full">
                   <span
-                    className="font-ui text-[6.5px] font-800 tracking-wider uppercase px-1 py-0.5 border border-black/20 bg-black/5 text-gray-700 rounded-sm mb-1 leading-none text-center"
+                    className="font-ui text-[7px] sm:text-[7.5px] font-800 tracking-wider uppercase px-1.5 py-0.5 border border-black/20 bg-black/5 text-gray-700 rounded-sm mb-1 leading-none text-center"
                     style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 800 }}
                   >
                     {TAG_LABELS[i]}
@@ -71,8 +71,8 @@ const KarmaCourt = ({ topConfessions }) => {
 
                 {/* Confession Text */}
                 <div
-                  className="font-handwrite text-black text-center leading-tight line-clamp-3 px-0.5 my-1"
-                  style={{ fontFamily: 'Caveat', fontSize: '0.82rem' }}
+                  className="font-handwrite text-black text-center leading-tight line-clamp-3 px-0.5 my-1 flex-1 flex items-center justify-center"
+                  style={{ fontFamily: 'Caveat', fontSize: 'clamp(0.92rem, 1.05vw, 1.15rem)', lineHeight: 1.25 }}
                 >
                   {c.text}
                 </div>

@@ -2,21 +2,11 @@ import { AVATARS, getRandomAvatar } from '../data/avatars.js';
 
 const USER_KEY = 'paap_user';
 
-// Possible display names paired with avatar IDs
-const IDENTITIES = [
-  { avatarId: 'duck',    displayName: 'Guilty Duck' },
-  { avatarId: 'rock',    displayName: 'Suspicious Rock' },
-  { avatarId: 'aloo',    displayName: 'Confused Aloo' },
-  { avatarId: 'samosa',  displayName: 'Sleepy Samosa' },
-  { avatarId: 'baba',    displayName: 'Shady Baba' },
-  { avatarId: 'monkey',  displayName: 'Chaotic Monkey' },
-  { avatarId: 'cat',     displayName: 'Sneaky Cat' },
-  { avatarId: 'penguin', displayName: 'Chill Penguin' },
-  { avatarId: 'goat',    displayName: 'Dramabaaz Goat' },
-  { avatarId: 'chai',    displayName: 'Overthinking Chai' },
-  { avatarId: 'onion',   displayName: 'Crying Pyaaz' },
-  { avatarId: 'sock',    displayName: 'Confused Sock' },
-];
+// Possible display names paired with avatar IDs derived from AVATARS
+const IDENTITIES = AVATARS.map((a) => ({
+  avatarId: a.id,
+  displayName: a.name,
+}));
 
 const generateUserId = () =>
   'user_' + Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
@@ -46,8 +36,8 @@ export const getOrCreateUser = () => {
   } catch {
     return {
       id: 'anon',
-      avatarId: 'duck',
-      displayName: 'Guilty Duck',
+      avatarId: AVATARS[0].id,
+      displayName: AVATARS[0].name,
     };
   }
 };

@@ -38,27 +38,38 @@ const Hero = ({ user, onConfessSubmit }) => {
             </div>
           </div>
 
-          {/* Headline with yellow brush */}
-          <div className="mb-6">
-            <div
-              className="font-ui font-900 text-5xl sm:text-6xl xl:text-7xl leading-none tracking-tight text-black uppercase"
-              style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 900 }}
-            >
-              AA GAYE
+          {/* Headline with yellow brush and mobile person illustration */}
+          <div className="relative mb-6 flex items-end justify-between sm:justify-start sm:gap-6">
+            <div>
+              <div
+                className="font-ui font-900 text-5xl sm:text-6xl xl:text-7xl leading-none tracking-tight text-black uppercase"
+                style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 900 }}
+              >
+                AA GAYE
+              </div>
+
+              {/* Yellow brush stroke background behind Hindi text */}
+              <div className="relative inline-block mt-2">
+                <div
+                  className="absolute inset-0 bg-[#F5C400]"
+                  style={{ transform: 'rotate(-1.5deg) skewX(-2deg)', zIndex: 0, top: '10%', bottom: '5%', left: '-8px', right: '-8px' }}
+                />
+                <div
+                  className="relative z-10 font-hindi text-5xl sm:text-7xl xl:text-8xl text-black leading-tight"
+                  style={{ fontFamily: 'Rozha One', lineHeight: 1.05 }}
+                >
+                  पाप करके
+                </div>
+              </div>
             </div>
 
-            {/* Yellow brush stroke background behind Hindi text */}
-            <div className="relative inline-block mt-2">
-              <div
-                className="absolute inset-0 bg-[#F5C400]"
-                style={{ transform: 'rotate(-1.5deg) skewX(-2deg)', zIndex: 0, top: '10%', bottom: '5%', left: '-8px', right: '-8px' }}
+            {/* Mobile Person Illustration (right side of AA Gaye paap karke) */}
+            <div className="block lg:hidden shrink-0 w-32 xs:w-36 sm:w-44 md:w-48 self-end -mb-2 pointer-events-none z-10">
+              <img
+                src="/Person.webp"
+                alt="Praying person"
+                className="w-full h-auto object-contain max-h-48 sm:max-h-60 drop-shadow-md"
               />
-              <div
-                className="relative z-10 font-hindi text-5xl sm:text-7xl xl:text-8xl text-black leading-tight"
-                style={{ fontFamily: 'Rozha One', lineHeight: 1.05 }}
-              >
-                पाप करके
-              </div>
             </div>
           </div>
 
