@@ -13,7 +13,7 @@
 
   --font-display: 'Yatra One', serif;
   --font-hindi: 'Rozha One', serif;
-  --font-handwrite: 'Caveat', cursive;
+  --font-handwrite: 'Kalam', 'Patrick Hand', cursive, sans-serif;
   --font-ui: 'Plus Jakarta Sans', sans-serif;
 }
 
@@ -38,7 +38,7 @@ body {
 
 .font-display { font-family: 'Yatra One', serif; }
 .font-hindi { font-family: 'Rozha One', serif; }
-.font-handwrite { font-family: 'Caveat', cursive; }
+.font-handwrite { font-family: 'Kalam', 'Patrick Hand', cursive, sans-serif; }
 .font-ui { font-family: 'Plus Jakarta Sans', sans-serif; }
 
 /* Brush stroke effect behind text */

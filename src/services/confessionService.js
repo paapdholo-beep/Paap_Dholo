@@ -2,6 +2,7 @@ import { MOCK_CONFESSIONS } from '../data/mockConfessions.js';
 
 const CONFESSIONS_KEY = 'paap_confessions';
 const REACTIONS_KEY   = 'paap_reactions';  // { confessionId_reactionType: true }
+const MOCK_HASH_KEY   = 'paap_mock_hash_v3';
 
 // ─────────────────────────────────────────────
 //  Internal helpers
@@ -29,14 +30,47 @@ const notifyDataChanged = () => {
   }
 };
 
+const getMockHash = () => {
+  try {
+    return JSON.stringify(
+      MOCK_CONFESSIONS.map((c) => ({
+        id: c.id,
+        text: c.text,
+        reactions: c.reactions,
+        repliesCount: c.replies?.length,
+      }))
+    );
+  } catch {
+    return 'v3_' + Date.now().toString();
+  }
+};
+
 /**
- * Seed mock data once on first load.
- * Will NOT duplicate if already seeded.
+ * Seed mock data on first load, or automatically sync updated mock confessions
+ * if mockConfessions.js has been modified, while preserving any user-posted confessions.
  */
 export const seedIfEmpty = () => {
   const existing = localStorage.getItem(CONFESSIONS_KEY);
+  const currentHash = getMockHash();
+  const savedHash = localStorage.getItem(MOCK_HASH_KEY);
+
   if (!existing) {
     save(CONFESSIONS_KEY, MOCK_CONFESSIONS);
+    localStorage.setItem(MOCK_HASH_KEY, currentHash);
+    return;
+  }
+
+  // If mockConfessions.js content was changed/updated:
+  if (savedHash !== currentHash) {
+    const existingData = load(CONFESSIONS_KEY, []);
+    const mockIds = new Set(MOCK_CONFESSIONS.map((c) => c.id));
+    // Keep user-created confessions (any confession not in the mock list)
+    const userConfessions = existingData.filter((c) => !mockIds.has(c.id));
+
+    // Put user confessions at the top, followed by the latest mock confessions
+    save(CONFESSIONS_KEY, [...userConfessions, ...MOCK_CONFESSIONS]);
+    localStorage.setItem(MOCK_HASH_KEY, currentHash);
+    notifyDataChanged();
   }
 };
 
@@ -203,32 +237,27 @@ export const getPaapDhulaiLeaderboard = () => {
 };
 
 /**
- * Get dynamic aggregate stats.
- * Base dynamic targets:
- * - Total Confessions: 48,292
- * - Total Judgements: 1,47,941
- * - Total Forgiven: 20,793
+ * Get accurate dynamic aggregate stats computed from actual confession data.
+ * - Total Confessions: actual number of confessions present in the website
+ * - Total Judgements: actual sum of all user reactions & replies
+ * - Total Forgiven: actual count of 'Maaf Kiya' (🙏) reactions
  */
 export const getStats = () => {
   const data = load(CONFESSIONS_KEY, []);
-  
-  // Confessions count: base of 48,292 for the initial 14 mock items
-  const baseConfessions = 48292 - 14;
-  const totalConfessions = Math.max(48292, baseConfessions + data.length);
 
-  // Judgements count: sum of all reactions & comments
+  // Exact number of confessions currently present
+  const totalConfessions = data.length;
+
+  // Actual count of all reactions & comments across all confessions
   const reactionCount = data.reduce(
     (s, c) => s + Object.values(c.reactions || {}).reduce((rs, v) => rs + v, 0),
     0
   );
   const repliesCount = data.reduce((s, c) => s + (c.replies?.length || 0), 0);
-  const baseJudgements = 147941 - (58225 + 11);
-  const totalJudgements = Math.max(147941, baseJudgements + reactionCount + repliesCount);
+  const totalJudgements = reactionCount + repliesCount;
 
-  // Forgiven count: sum of all forgive (🙏) reactions
-  const forgiveCount = data.reduce((s, c) => s + (c.reactions?.forgive || 0), 0);
-  const baseForgiven = 20793 - 8784;
-  const totalForgiven = Math.max(20793, baseForgiven + forgiveCount);
+  // Actual 'Maaf Kiya' (🙏) count
+  const totalForgiven = data.reduce((s, c) => s + (c.reactions?.forgive || 0), 0);
 
   return { totalConfessions, totalJudgements, totalForgiven };
 };

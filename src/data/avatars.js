@@ -25,10 +25,10 @@ export const AVATARS = [
   { id: 'ghost-party',  legacyId: 'penguin', name: 'Party Bhoot',      image: ghostParty,  emoji: '👻', bg: '#BAE6FD', color: '#0C4A6E' },
   { id: 'goat-thug',    legacyId: 'goat',    name: 'Thug Bakri',       image: goatThug,    emoji: '🐐', bg: '#A7F3D0', color: '#064E3B' },
   { id: 'husky-cool',   legacyId: 'chai',    name: 'Cool Husky',       image: huskyCool,   emoji: '🐕', bg: '#D6B896', color: '#44250A' },
-  { id: 'lion-crown',   legacyId: 'onion',   name: 'Sher Raja',        image: lionCrown,   emoji: '🦁', bg: '#E9D5FF', color: '#581C87' },
+  { id: 'lion-crown',   legacyId: 'lion',    name: 'Sher Raja',        image: lionCrown,   emoji: '🦁', bg: '#E9D5FF', color: '#581C87' },
   { id: 'panda-beats',  legacyId: 'sock',    name: 'Beats Panda',      image: pandaBeats,  emoji: '🎧', bg: '#FEF08A', color: '#713F12' },
-  { id: 'panda-sleepy', legacyId: null,      name: 'Sleepy Panda',     image: pandaSleepy, emoji: '🐼', bg: '#E2E8F0', color: '#334155' },
-  { id: 'skull-blunt',  legacyId: null,      name: 'Blunt Khopdi',     image: skullBlunt,  emoji: '💀', bg: '#DDD6FE', color: '#5B21B6' },
+  { id: 'panda-sleepy', legacyId: 'panda',   name: 'Sleepy Panda',     image: pandaSleepy, emoji: '🐼', bg: '#E2E8F0', color: '#334155' },
+  { id: 'skull-blunt',  legacyId: 'skull',   name: 'Blunt Khopdi',     image: skullBlunt,  emoji: '💀', bg: '#DDD6FE', color: '#5B21B6' },
 ];
 
 export const getAvatarById = (id) =>

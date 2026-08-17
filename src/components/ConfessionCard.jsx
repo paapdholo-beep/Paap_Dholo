@@ -45,7 +45,7 @@ const ReplySection = ({ confession, user, onReplyAdded }) => {
                   <span className="font-ui text-xs font-600 text-gray-700" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 600 }}>{reply.displayName}</span>
                   <span className="font-ui text-[10px] text-gray-400" style={{ fontFamily: 'Plus Jakarta Sans' }}>{timeAgo(reply.createdAt)}</span>
                 </div>
-                <div className="font-handwrite text-gray-800" style={{ fontFamily: 'Caveat', fontSize: 'clamp(1.02rem, 1.1vw, 1.2rem)', lineHeight: 1.35 }}>{reply.text}</div>
+                <div className="font-handwrite text-gray-900" style={{ fontFamily: "'Kalam', cursive, sans-serif", fontSize: 'clamp(0.92rem, 1.02vw, 1.05rem)', lineHeight: 1.4 }}>{reply.text}</div>
               </div>
             </div>
           ))}
@@ -61,8 +61,8 @@ const ReplySection = ({ confession, user, onReplyAdded }) => {
             onChange={(e) => setReplyText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSubmitReply()}
             placeholder="Apni judgement do..."
-            className="flex-1 bg-[#F5EEDF] border border-gray-300 px-3 py-2 font-handwrite text-sm text-gray-800 placeholder-gray-400"
-            style={{ fontFamily: 'Caveat', fontSize: '0.95rem' }}
+            className="flex-1 bg-[#F5EEDF] border border-gray-300 px-3 py-2 font-handwrite text-sm text-gray-900 placeholder-gray-500"
+            style={{ fontFamily: "'Kalam', cursive, sans-serif", fontSize: '0.95rem' }}
           />
           <button
             onClick={handleSubmitReply}
@@ -78,7 +78,7 @@ const ReplySection = ({ confession, user, onReplyAdded }) => {
   );
 };
 
-const ConfessionCard = ({ confession: initialConfession, user, index }) => {
+const ConfessionCard = ({ confession: initialConfession, user, index, isHighlighted, onClearHighlight }) => {
   const [confession, setConfession] = useState(initialConfession);
   const [userReactions, setUserReactions] = useState(
     () => getUserReactions({ confessionId: initialConfession.id, userId: user.id })
@@ -115,14 +115,33 @@ const ConfessionCard = ({ confession: initialConfession, user, index }) => {
 
   return (
     <div
-      className="card-tilt border-2 border-black p-4 sm:p-5 animate-slide-up"
+      id={`confession-${confession.id}`}
+      className={`card-tilt border-2 ${isHighlighted ? 'border-[#F43F5E] ring-2 ring-[#F43F5E]/30' : 'border-black'} p-4 sm:p-5 animate-slide-up transition-all`}
       style={{
-        backgroundColor: variant.bg,
+        backgroundColor: isHighlighted ? '#FFF9E0' : variant.bg,
         transform: tilt,
-        boxShadow: '3px 3px 0 #111',
+        boxShadow: isHighlighted ? '4px 4px 0 #F43F5E' : '3px 3px 0 #111',
         animationDelay: `${index * 60}ms`,
       }}
     >
+      {/* Pinned from Karma Court Notice */}
+      {isHighlighted && (
+        <div className="mb-3 pb-2 border-b border-dashed border-[#F43F5E]/40 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-[#F43F5E] font-ui font-800 text-[10.5px] uppercase tracking-wider">
+            <span>⚖️</span>
+            <span>PINNED FROM KARMA COURT</span>
+          </div>
+          {onClearHighlight && (
+            <button
+              onClick={onClearHighlight}
+              className="text-[10px] text-gray-500 hover:text-black font-ui font-600 underline cursor-pointer"
+            >
+              Show Normal Feed
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Card Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2.5">
@@ -156,7 +175,7 @@ const ConfessionCard = ({ confession: initialConfession, user, index }) => {
       <div className="flex flex-col sm:flex-row gap-3 mb-3 items-start">
         <div
           className="font-handwrite text-gray-900 flex-1"
-          style={{ fontFamily: 'Caveat', fontSize: 'clamp(1.15rem, 1.4vw, 1.45rem)', lineHeight: 1.35 }}
+          style={{ fontFamily: "'Kalam', cursive, sans-serif", fontSize: 'clamp(1.05rem, 1.3vw, 1.3rem)', lineHeight: 1.5, fontWeight: 400 }}
         >
           {confession.text}
         </div>
@@ -170,7 +189,7 @@ const ConfessionCard = ({ confession: initialConfession, user, index }) => {
             <div className="font-ui text-xs sm:text-sm font-700 text-black mb-0.5" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700 }}>
               {topReply.displayName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
             </div>
-            <div className="font-handwrite text-gray-800 italic" style={{ fontFamily: 'Caveat', fontSize: 'clamp(1.02rem, 1.15vw, 1.22rem)', lineHeight: 1.35 }}>
+            <div className="font-handwrite text-gray-900" style={{ fontFamily: "'Kalam', cursive, sans-serif", fontSize: 'clamp(0.95rem, 1.05vw, 1.1rem)', lineHeight: 1.4 }}>
               "{topReply.text}"
             </div>
             <div className="font-ui text-[10px] sm:text-xs text-gray-500 mt-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>

@@ -126,10 +126,10 @@ const Hero = ({ user, onConfessSubmit }) => {
           >
             <span
               style={{
-                fontFamily: 'Caveat, cursive',
-                fontSize: '1.3rem',
+                fontFamily: "'Kalam', cursive, sans-serif",
+                fontSize: '1.25rem',
                 fontWeight: 700,
-                color: '#222',
+                color: '#111',
                 letterSpacing: '0.02em',
               }}
             >

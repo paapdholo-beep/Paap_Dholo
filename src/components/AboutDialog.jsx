@@ -201,10 +201,10 @@ const AboutDialog = ({ isOpen, onClose, onConfessClick }) => {
               </div>
               <p
                 style={{
-                  fontFamily: 'Caveat, cursive',
-                  fontSize: '1.2rem',
-                  color: '#555',
-                  lineHeight: 1.3,
+                  fontFamily: "'Kalam', cursive, sans-serif",
+                  fontSize: '1rem',
+                  color: '#444',
+                  lineHeight: 1.4,
                 }}
               >
                 Paap Dholo is India's anonymous confession department — a safe, humorous corner of the internet to unburden your guilty secrets.

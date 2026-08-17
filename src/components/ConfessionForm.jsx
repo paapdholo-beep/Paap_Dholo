@@ -1,15 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { buildTornEdgePath, PAPER_GRAIN_URI, PAPER_SHADOW } from "../utils/TornPaper.js";
-
-const PLACEHOLDERS = [
-  'Maine mummy se bola library jaa raha hu... aur main Netflix dekh raha tha.',
-  'Main 5 minute ke liye phone chalane gaya tha. 3 ghante baad wapas aaya.',
-  'Maine dost ka fries bina pooche kha liya. Usse pata nahi.',
-  'Main meeting mein camera off karke so raha tha.',
-  '"On the way" bolke abhi ghar pe hi hun. Kapde bhi nahi pahe.',
-  'Gym membership li sirf t-shirt ke liye. Kabhi nahi gaaya.',
-  'Delivery bhai ne bell bajayi. Main paas tha. 5 minute baad darwaza khola.',
-];
 
 // Fixed seed (11) so the slip's tear is stable but shaped differently
 // than the other torn-paper cards on the page.
@@ -31,16 +21,7 @@ const ConfessionForm = ({ user, onSubmit }) => {
   const [text, setText] = useState('');
   const [severity, setSeverity] = useState('minor');
   const [submitted, setSubmitted] = useState(false);
-  const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const textareaRef = useRef(null);
-
-  // Rotate placeholder text
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIdx((i) => (i + 1) % PLACEHOLDERS.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleSubmit = () => {
     if (!text.trim()) return;
@@ -98,14 +79,14 @@ const ConfessionForm = ({ user, onSubmit }) => {
                   <div style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 800, fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#111' }}>
                     PAAP DHOLO
                   </div>
-                  <div style={{ fontFamily: 'Plus Jakarta Sans', fontSize: '8px', color: '#999', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <div style={{ fontFamily: 'Plus Jakarta Sans', fontSize: '8px', color: '#666', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     Confession Department
                   </div>
                 </div>
               </div>
 
               {/* Stamp — centred between logo and barcode */}
-              <div className="stamp" style={{ borderColor: '#F43F5E', color: '#F43F5E', fontSize: '8px', padding: '2px 6px', opacity: 0.7, flexShrink: 0 }}>
+              <div className="stamp" style={{ borderColor: '#F43F5E', color: '#F43F5E', fontSize: '8px', padding: '2px 6px', opacity: 0.8, flexShrink: 0 }}>
                 CONFESSION<br />SLIP
               </div>
 
@@ -116,14 +97,14 @@ const ConfessionForm = ({ user, onSubmit }) => {
                     <span key={i} style={{ height: i % 4 === 0 ? '28px' : '20px', marginTop: i % 4 === 0 ? 0 : '4px' }} />
                   ))}
                 </div>
-                <span style={{ fontFamily: 'Plus Jakarta Sans', fontSize: '7px', color: '#bbb', letterSpacing: '0.12em' }}>
+                <span style={{ fontFamily: 'Plus Jakarta Sans', fontSize: '7px', color: '#777', fontWeight: 600, letterSpacing: '0.12em' }}>
                   CONFESSION SLIP
                 </span>
               </div>
             </div>
           </div>
           <div style={{ marginBottom: '16px' }}>
-            <div style={{ fontFamily: 'Plus Jakarta Sans', fontSize: '8px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#999', marginBottom: '6px' }}>
+            <div style={{ fontFamily: 'Plus Jakarta Sans', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#444', marginBottom: '6px' }}>
               YOUR PAAP:
             </div>
             {submitted ? (
@@ -132,7 +113,7 @@ const ConfessionForm = ({ user, onSubmit }) => {
                 <div className="animate-soap" style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 800, fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#111', marginBottom: '4px' }}>
                   PAAP REGISTERED.
                 </div>
-                <div style={{ fontFamily: 'Caveat', fontSize: '1rem', color: '#666' }}>
+                <div style={{ fontFamily: "'Kalam', cursive, sans-serif", fontSize: '1rem', color: '#555' }}>
                   Bhagwan ko bata diya hai.<br />Ab jao, comments padho. 🙏
                 </div>
               </div>
@@ -141,17 +122,18 @@ const ConfessionForm = ({ user, onSubmit }) => {
                 ref={textareaRef}
                 value={text}
                 onChange={(e) => setText(e.target.value.slice(0, MAX_CHARS))}
-                placeholder={PLACEHOLDERS[placeholderIdx]}
+                placeholder="Apna paap yahan confess karo..."
                 rows={4}
                 style={{
                   width: '100%',
                   background: 'rgba(245, 235, 200, 0.45)',
                   border: '1px solid #d4c090',
                   padding: '12px',
-                  fontFamily: 'Caveat',
-                  fontSize: '1.05rem',
+                  fontFamily: "'Kalam', cursive, sans-serif",
+                  fontSize: '1rem',
+                  lineHeight: '1.4',
                   resize: 'none',
-                  color: '#333',
+                  color: '#222',
                   boxSizing: 'border-box',
                   outline: 'none',
                 }}
@@ -163,7 +145,8 @@ const ConfessionForm = ({ user, onSubmit }) => {
                 marginTop: '4px',
                 fontFamily: 'Plus Jakarta Sans',
                 fontSize: '11px',
-                color: remaining < 30 ? '#F43F5E' : '#bbb',
+                fontWeight: 600,
+                color: remaining < 30 ? '#F43F5E' : '#666',
               }}>
                 {remaining} characters left
               </div>
@@ -172,7 +155,7 @@ const ConfessionForm = ({ user, onSubmit }) => {
           {!submitted && (
             <>
               <div style={{ marginBottom: '14px' }}>
-                <div style={{ fontFamily: 'Plus Jakarta Sans', fontSize: '8px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#999', marginBottom: '8px' }}>
+                <div style={{ fontFamily: 'Plus Jakarta Sans', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#444', marginBottom: '8px' }}>
                   HOW BAD WAS IT?
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>

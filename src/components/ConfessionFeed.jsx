@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ConfessionCard from './ConfessionCard.jsx';
-import { getConfessions } from '../services/confessionService.js';
+import { getConfessions, getConfessionById } from '../services/confessionService.js';
 
 const SORT_OPTIONS = [
   { value: 'latest',        label: 'Latest First' },
@@ -18,12 +18,33 @@ const SEVERITY_FILTERS = [
 
 const PAGE_SIZE = 6;
 
-const ConfessionFeed = ({ user, refreshKey }) => {
+const ConfessionFeed = ({ user, refreshKey, selectedConfessionId, onClearSelected }) => {
   const [sort, setSort] = useState('latest');
   const [severityFilter, setSeverityFilter] = useState('all');
   const [page, setPage] = useState(1);
 
-  const allConfessions = getConfessions({ sort, severityFilter });
+  let allConfessions = getConfessions({ sort, severityFilter });
+
+  // If a confession was clicked from Karma Court, put it directly on top of the feed
+  if (selectedConfessionId) {
+    const selectedTarget = allConfessions.find((c) => c.id === selectedConfessionId) || getConfessionById(selectedConfessionId);
+    if (selectedTarget) {
+      allConfessions = [selectedTarget, ...allConfessions.filter((c) => c.id !== selectedConfessionId)];
+    }
+  }
+
+  // Smoothly scroll down to the prioritized confession card when selected
+  useEffect(() => {
+    if (selectedConfessionId) {
+      setTimeout(() => {
+        const el = document.getElementById(`confession-${selectedConfessionId}`) || document.getElementById('paap-register');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 50);
+    }
+  }, [selectedConfessionId]);
+
   const visible = allConfessions.slice(0, page * PAGE_SIZE);
   const hasMore = visible.length < allConfessions.length;
 
@@ -85,6 +106,8 @@ const ConfessionFeed = ({ user, refreshKey }) => {
               confession={confession}
               user={user}
               index={i}
+              isHighlighted={confession.id === selectedConfessionId}
+              onClearHighlight={onClearSelected}
             />
           ))
         )}
