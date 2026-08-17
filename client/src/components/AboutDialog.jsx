@@ -258,7 +258,7 @@ const AboutDialog = ({ isOpen, onClose, onConfessClick }) => {
                     lineHeight: 1.4,
                   }}
                 >
-                  Read confessions, react with judgements (Sharam Kar, Relatable, Wah), and vote for weekly top paaps.
+                  Read confessions, react with judgements (Sharam Kar, Relatable, Wah), and vote for daily top paaps.
                 </div>
               </div>
 

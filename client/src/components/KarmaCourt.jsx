@@ -28,7 +28,7 @@ const KarmaCourt = ({ topConfessions, onSelectConfession }) => {
             KARMA COURT
           </div>
           <div className="font-ui text-[10px] text-pink-100 tracking-widest" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-            Top judged paap of the week.
+            Daily top judged paap.
           </div>
         </div>
       </div>

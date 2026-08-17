@@ -67,7 +67,7 @@ const BabaQuoteBanner = ({ onConfessClick }) => {
                   textTransform: 'uppercase',
                 }}
               >
-                KARO PAAP,<br />PAAO SHAANTI.
+                Ho Gaya hai paap,<br />chale aao hamare pass.
               </div>
 
               {/* Pink accent text with pink underline */}

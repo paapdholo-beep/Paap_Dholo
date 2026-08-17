@@ -386,18 +386,38 @@ export const getUserReactions = ({ confessionId, userId }) => {
 };
 
 /**
- * Get top 3 most judged confessions for Karma Court.
+ * Get top 3 most judged confessions for Karma Court (Daily Top Judged).
  */
 export const getKarmaCourtTop = () => {
   const data = load(CONFESSIONS_KEY, []);
-  return [...data]
-    .filter((c) => (c.reportsCount || 0) < 3)
-    .sort(
+  const validConfessions = [...data].filter((c) => (c.reportsCount || 0) < 3);
+
+  // Filter for confessions from the last 24 hours (today)
+  const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const todayConfessions = validConfessions.filter(
+    (c) => (c.createdAt || 0) >= oneDayAgo
+  );
+
+  const sortByJudgements = (list) =>
+    [...list].sort(
       (a, b) =>
-        Object.values(b.reactions).reduce((s, v) => s + v, 0) -
-        Object.values(a.reactions).reduce((s, v) => s + v, 0)
-    )
-    .slice(0, 3);
+        Object.values(b.reactions || {}).reduce((s, v) => s + v, 0) -
+        Object.values(a.reactions || {}).reduce((s, v) => s + v, 0)
+    );
+
+  const todayTop = sortByJudgements(todayConfessions).slice(0, 3);
+
+  // If there are at least 3 confessions from today, return them
+  if (todayTop.length >= 3) {
+    return todayTop;
+  }
+
+  // Otherwise, top up with recent top judged confessions to keep podium filled
+  const remaining = sortByJudgements(validConfessions).filter(
+    (c) => !todayTop.some((t) => t.id === c.id)
+  );
+
+  return [...todayTop, ...remaining].slice(0, 3);
 };
 
 /**
