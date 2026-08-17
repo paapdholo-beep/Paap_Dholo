@@ -82,7 +82,7 @@ const BabaQuoteBanner = ({ onConfessClick }) => {
                     textTransform: 'uppercase',
                   }}
                 >
-                  (YA JUDGEMENT)
+                  (SAB DHO DENGE!)
                 </span>
                 <div
                   style={{
